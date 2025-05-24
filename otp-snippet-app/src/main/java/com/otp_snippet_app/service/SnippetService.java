@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Random;
 
 @Service
 public class SnippetService {
@@ -18,10 +18,17 @@ public class SnippetService {
     }
 
     public String saveSnippet(String content) {
-        String otp = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        String otp = generate4DigitOtp();
         Snippet snippet = Snippet.builder().otp(otp).content(content).createdAt(LocalDateTime.now()).used(false).build();
+
         repository.save(snippet);
         return otp;
+    }
+
+    private String generate4DigitOtp() {
+        Random random = new Random();
+        int otpValue = 1000 + random.nextInt(9000);
+        return String.valueOf(otpValue);
     }
 
     public Optional<String> getSnippetByOtp(String otp) {
