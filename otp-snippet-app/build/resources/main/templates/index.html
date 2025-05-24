@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>OTP Snippet Share</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff, #e6f7ff);
+            padding: 30px;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .otp-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 200px;
+            margin-left: -100px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 16px;
+        }
+        .toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+    <script>
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => showToast("📋 Copied to clipboard!"));
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "toast show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function validateForm() {
+            const content = document.getElementById("textInput").value.trim();
+            if (content === "") {
+                showToast("⚠️ Please enter some text before submitting!");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+<h2>🎯 Paste Your Code Snippet</h2>
+<form onsubmit="return validateForm()" method="post" action="/submit">
+    <textarea id="textInput" name="content" rows="10" placeholder="Paste code here..."></textarea><br><br>
+    <button type="submit">Generate OTP</button>
+</form>
+<div th:if="${otp}" class="otp-box">
+    <p><strong>Your OTP:</strong> <span id="otpText" th:text="${otp}"></span></p>
+    <button onclick="copyToClipboard('otpText')">📋 Copy OTP</button>
+</div>
+<br><a href="/retrieve">🔍 Retrieve Snippet</a>
+<div id="toast" class="toast"></div>
+</body>
+</html>
